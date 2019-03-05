@@ -1,28 +1,18 @@
-function [u,iter,soliter] = conjugate(A,b,u0,iter)
-%Function to perform the conjugate gradient method. This method reuquires
-%the matrix A to be real  and symmetric positive definite. f is the RHS of
-%the equation Ax = b and u0 is the first guess at the solution.
-r = b - A*u0; % This is the first rsidual, r0 in the notes.
-p = r; % As part of the method we choose p0 = r0.
-mag = norm(r); % This is the 2-norm/magnitude of r which we will also need later in the method. 
-%This part is just initialising the variables we will require later.
+function [u,k] = conjugate(A,b,u0) %be careful about the dimension of A b and u0
+p = b - A*u0;
+k = 0;
+r = b - A*u0;
 u = u0;
-soliter = [];
-soliter(:,1) = u0;
-while mag > 1e-8 
-    N = A*p;% This is defined now, as we will require this product several times during the method.
-    %alpha = mag/(p'*N); 
-    alpha = p'*r/(p'*N);
-    u = u + alpha*p;
-    soliter(:,iter+2) = u;
-    r = b - A*u;
-    %Update the sol and residual (u and r).
-    beta = -(p'*A*r)/(p'*N);
-    %beta = norm(r)/mag; 
+while norm(r) > 1e-8
+    m = A*p;
+    a = (norm(r))^2/(p'*m);
+    u = u + a*p;
+    rpre = r;
+    r = r - a*m;
+    beta = (norm(r))^2/(norm(rpre))^2;
     p = r + beta*p;
-    mag = norm(r);
-    iter = iter + 1;
-    
+    k = k+1;
 end
+disp(u)
+disp(k)
 end
-
